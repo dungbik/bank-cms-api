@@ -34,11 +34,11 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String jwt = resolveToken(request);
 
-        log.info("[JwtFilter] jwt[{}]", jwt);
+        String jwt = resolveToken(request);
+        log.info("[JwtFilter] url[{}] jwt[{}]", request.getRequestURI(), jwt);
+
         if (StringUtils.hasText(jwt) && tokenComponent.validateToken(jwt)) {
-            log.info("[JwtFilter] validateToken success");
             Authentication authentication = tokenComponent.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
