@@ -1,6 +1,7 @@
 package com.uni.bankcmsapi.controller;
 
 import com.uni.bankcmsapi.service.NotificationService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,9 @@ public class SseController {
     private final NotificationService notificationService;
 
     @GetMapping(value = "/subscribe", produces = "text/event-stream")
-    public SseEmitter subscribe() {
+    public SseEmitter subscribe(HttpServletResponse response) {
+        response.addHeader("X-Accel-Buffering", "no");
+
         return notificationService.subscribe();
     }
 }
