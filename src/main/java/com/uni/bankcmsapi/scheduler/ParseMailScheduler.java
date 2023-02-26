@@ -66,15 +66,20 @@ public class ParseMailScheduler {
     }
 
     public void initMailService() {
+        this.mailServices.clear();
         this.mMailRepository.findAll().forEach((e) -> {
             IMAPMailService mailService = new IMAPMailService();
-            try {
-                mailService.login(HOST, e.getEmail(), e.getPassword());
-            } catch (Exception ex) {
-                log.error("[initMailService] login fail email[{}] password[{}]", e.getEmail(), e.getPassword());
-            }
+            loginMailService(mailService, e.getEmail(), e.getPassword());
             this.mailServices.add(mailService);
         });
+    }
+
+    public void loginMailService(IMAPMailService mailService, String email, String password) {
+        try {
+            mailService.login(HOST, email, password);
+        } catch (Exception ex) {
+            log.error("[loginMailService] login fail email[{}] password[{}]", email, password);
+        }
     }
 
     @Async
@@ -90,16 +95,27 @@ public class ParseMailScheduler {
                 .collect(Collectors.toMap(e -> e.getCompanyName(), e -> e));
 
         for (IMAPMailService mailService : mailServices) {
-            if (!mailService.isLoggedIn()) {
-                continue;
-            }
-
             M_MAIL mMail = mMailMap.get(mailService.getEmail());
             if (mMail == null) {
                 continue;
             }
 
-            int lastNo = mailService.getMessageCount();
+            if (!mailService.isLoggedIn()) {
+                loginMailService(mailService, mMail.getEmail(), mMail.getPassword());
+            }
+
+            int lastNo = 0;
+            int retryCnt = 3;
+            while (retryCnt-- > 0) {
+                try {
+                    lastNo = mailService.getMessageCount();
+                    break;
+                } catch (Exception ex) {
+                    log.warn("[ParseMailScheduler] getMessageCount fail ex[{}]", ex);
+                    loginMailService(mailService, mMail.getEmail(), mMail.getPassword());
+                }
+            }
+            mailService.getMessageCount();
             int startNo = mMail.getLastNo() + 1;
             int cnt = lastNo - startNo + 1;
             if (cnt > 5) {
@@ -116,7 +132,24 @@ public class ParseMailScheduler {
             log.info("[ParseMailScheduler] startNo[{}] endNo[{}] lastNo[{}] cnt[{}]", startNo, endNo, lastNo, cnt);
 
             long start = System.currentTimeMillis();
-            Message[] msgArray = mailService.getMessages(startNo, endNo);
+            Message[] msgArray = null;
+
+            retryCnt = 3;
+            while (retryCnt-- > 0) {
+                try {
+                    msgArray = mailService.getMessages(startNo, endNo);
+                    break;
+                } catch (Exception ex) {
+                    log.warn("[ParseMailScheduler] getMessages fail ex[{}]", ex);
+                    loginMailService(mailService, mMail.getEmail(), mMail.getPassword());
+                }
+            }
+
+            if (msgArray == null) {
+                log.warn("[ParseMailScheduler] msgArray is null");
+                continue;
+            }
+
             for (int i = 0; i < cnt; i++) {
                 Message msg = msgArray[i];
                 if (msg == null) {
@@ -226,14 +259,8 @@ public class ParseMailScheduler {
             session = null;
         }
 
-        public int getMessageCount() {
-            int messageCount = 0;
-            try {
-                messageCount = folder.getMessageCount();
-            } catch (MessagingException me) {
-                me.printStackTrace();
-            }
-            return messageCount;
+        public int getMessageCount() throws MessagingException {
+            return folder.getMessageCount();
         }
 
         public Message[] getMessages(boolean onlyNotRead) throws MessagingException {
