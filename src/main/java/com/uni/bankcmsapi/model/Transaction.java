@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Transaction {
 
+    private String companyName;
     private String bank;
     private String txType;
     private String name;

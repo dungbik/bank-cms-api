@@ -55,13 +55,12 @@ public class NotificationService {
         this.emitters.entrySet().forEach(map -> {
             String username = map.getKey().split("_")[0];
 
-            if (data instanceof H_TRANSACTION) {
+            if (data instanceof Transaction) {
                 M_USER mUser = mstCacheService.findByUsername(username);
-                H_TRANSACTION hTransaction = ((H_TRANSACTION) data);
+                Transaction tx = ((Transaction) data);
 
-                log.info("[NotificationService] H_TRANSACTION mUser.getCompanyList()[{}] companyName[{}]", mUser.getCompanyList(), hTransaction.getCompanyName());
-                if (mUser.getCompanyList().contains(hTransaction.getCompanyName())) {
-                    Transaction tx = new Transaction(hTransaction.getBank().name(), hTransaction.getTxType().name(), hTransaction.getName(), hTransaction.getAmount(), hTransaction.getFee(), hTransaction.getTotalAmount(), hTransaction.getBalance(), hTransaction.getTxTime());
+                log.info("[NotificationService] Transaction mUser.getCompanyList()[{}] companyName[{}]", mUser.getCompanyList(), tx.getCompanyName());
+                if (mUser.getCompanyList().contains(tx.getCompanyName())) {
                     log.info("[NotificationService] call sendToClient name[{}] tx[{}]", name, tx);
                     sendToClient(map.getValue(), map.getKey(), name, tx);
                 }

@@ -5,6 +5,7 @@ import com.uni.bankcmsapi.entity.M_COMPANY;
 import com.uni.bankcmsapi.entity.M_DASHBOARD;
 import com.uni.bankcmsapi.entity.M_MAIL;
 import com.uni.bankcmsapi.model.TodayDashboard;
+import com.uni.bankcmsapi.model.Transaction;
 import com.uni.bankcmsapi.repository.HTransactionRepository;
 import com.uni.bankcmsapi.repository.MDashboardRepository;
 import com.uni.bankcmsapi.repository.MMailRepository;
@@ -159,8 +160,10 @@ public class ParseMailScheduler {
                             companyName, Bank.KB,
                                     isDeposit ? TransactionType.DEPOSIT : TransactionType.WITHDRAW,
                                     name, amount, fee, balance, totalAmount, dt);
-
-                    this.notificationService.sendAll("tx", hTransaction);
+                    Transaction tx = new Transaction(companyName, hTransaction.getBank().name(), hTransaction.getTxType().name(), hTransaction.getName(), hTransaction.getAmount(), hTransaction.getFee(), hTransaction.getTotalAmount(), hTransaction.getBalance(), hTransaction.getTxTime());
+                    if (tx != null) {
+                        this.notificationService.sendAll("tx", tx);
+                    }
 
                     this.hTransactionRepository.insert(hTransaction);
 
