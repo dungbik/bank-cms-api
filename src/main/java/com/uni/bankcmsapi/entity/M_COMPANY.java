@@ -13,11 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class M_COMPANY {
 
     @Id
-    private Company companyName;
+    private String companyName;
     private double feeRate;
-
-    public enum Company {
-        C1, C2, C3, C4, C5
-    }
 
 }

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Document("H_TRANSACTION")
 public class H_TRANSACTION {
 
-    private M_COMPANY.Company companyName;
+    private String companyName;
     private Bank bank;
     private TransactionType txType;
     private String name;

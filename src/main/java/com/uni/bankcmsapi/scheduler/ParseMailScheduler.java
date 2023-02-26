@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 import static com.uni.bankcmsapi.entity.H_TRANSACTION.Bank;
 import static com.uni.bankcmsapi.entity.H_TRANSACTION.TransactionType;
-import static com.uni.bankcmsapi.entity.M_COMPANY.Company;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -87,7 +86,7 @@ public class ParseMailScheduler {
         Map<String, M_MAIL> mMailMap = this.mMailRepository.findAll().stream()
                 .collect(Collectors.toMap(e -> e.getEmail(), e -> e));
         Map<String, M_COMPANY> mCompanyMap = this.mstCacheService.getAllCompany().stream()
-                .collect(Collectors.toMap(e -> e.getCompanyName().name(), e -> e));
+                .collect(Collectors.toMap(e -> e.getCompanyName(), e -> e));
 
         for (IMAPMailService mailService : mailServices) {
             if (!mailService.isLoggedIn()) {
@@ -156,9 +155,8 @@ public class ParseMailScheduler {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM/dd HH:mm");
                     LocalDateTime dt = LocalDateTime.parse(dateStr, formatter);
 
-                    Company company = Company.valueOf(companyName);
                     H_TRANSACTION hTransaction = new H_TRANSACTION(
-                            company, Bank.KB,
+                            companyName, Bank.KB,
                                     isDeposit ? TransactionType.DEPOSIT : TransactionType.WITHDRAW,
                                     name, amount, fee, balance, totalAmount, dt);
 
@@ -172,7 +170,7 @@ public class ParseMailScheduler {
 
                     M_DASHBOARD mDashboard = this.mDashboardRepository.findById(key).orElse(null);
                     if (mDashboard != null) {
-                        TodayDashboard todayDashboard = new TodayDashboard(company, mDashboard.getTotalDeposit(), mDashboard.getTotalWithdraw(), mDashboard.getTotalFee(), mDashboard.getTotalBalance());
+                        TodayDashboard todayDashboard = new TodayDashboard(companyName, mDashboard.getTotalDeposit(), mDashboard.getTotalWithdraw(), mDashboard.getTotalFee(), mDashboard.getTotalBalance());
                         this.notificationService.sendAll("dashboard", todayDashboard);
                     }
                 }

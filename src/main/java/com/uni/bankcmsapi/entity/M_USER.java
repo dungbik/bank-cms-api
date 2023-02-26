@@ -17,7 +17,7 @@ public class M_USER {
     @Id private String username;
     private String password;
 
-    private List<M_COMPANY.Company> companyList;
+    private List<String> companyList;
 
     private List<Authority> authorities;
 

@@ -1,12 +1,12 @@
 package com.uni.bankcmsapi.controller;
 
 import com.uni.bankcmsapi.component.UserComponent;
-import com.uni.bankcmsapi.entity.M_COMPANY;
 import com.uni.bankcmsapi.entity.M_DASHBOARD;
 import com.uni.bankcmsapi.entity.M_USER;
 import com.uni.bankcmsapi.model.DashboardResponse;
 import com.uni.bankcmsapi.repository.MDashboardRepository;
 import com.uni.bankcmsapi.util.KeyUtil;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,9 +31,8 @@ public class DashboardController {
     @GetMapping
     public DashboardResponse getDashboard(@RequestParam String companyName) {
         M_USER user = userComponent.getUser();
-        M_COMPANY.Company company = M_COMPANY.Company.valueOf(companyName);
-        if (user == null || company == null || !user.getCompanyList().contains(company)) {
-            log.warn("[getDashboard] user[{}] company[{}] user.getCompanyList()[{}]", user, company, user.getCompanyList());
+        if (user == null || StringUtils.isEmpty(companyName) || !user.getCompanyList().contains(companyName)) {
+            log.warn("[getDashboard] user[{}] companyName[{}] user.getCompanyList()[{}]", user, companyName, user.getCompanyList());
             return new DashboardResponse();
         }
 

@@ -1,7 +1,6 @@
 package com.uni.bankcmsapi.controller;
 
 import com.uni.bankcmsapi.component.UserComponent;
-import com.uni.bankcmsapi.entity.M_COMPANY;
 import com.uni.bankcmsapi.entity.M_USER;
 import com.uni.bankcmsapi.model.Transaction;
 import com.uni.bankcmsapi.model.TransactionResponse;
@@ -35,8 +34,7 @@ public class TransactionController {
         }
 
         M_USER user = userComponent.getUser();
-        M_COMPANY.Company company = M_COMPANY.Company.valueOf(companyName);
-        if (company == null || !user.getCompanyList().contains(company)) {
+        if (StringUtils.isEmpty(companyName) || !user.getCompanyList().contains(companyName)) {
             log.warn("[getTransaction] companyName[{}] user.getCompanyList()[{}]", companyName, user.getCompanyList());
             return new TransactionResponse();
         }
