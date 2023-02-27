@@ -30,7 +30,7 @@ public class NotificationService {
             return null;
         }
 
-        SseEmitter emitter = new SseEmitter(1 * 60 * 1000L);
+        SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
 
         String username = mUser.getUsername();
         String userKey = username + "_" + System.currentTimeMillis();
