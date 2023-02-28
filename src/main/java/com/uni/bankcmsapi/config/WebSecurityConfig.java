@@ -49,6 +49,7 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeRequests()
                 .requestMatchers("/v1/user/login", "/v1/sse/subscribe").permitAll()
+                .requestMatchers("/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
 
                 .and()

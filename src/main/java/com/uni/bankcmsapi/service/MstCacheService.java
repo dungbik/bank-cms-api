@@ -5,6 +5,7 @@ import com.uni.bankcmsapi.entity.M_USER;
 import com.uni.bankcmsapi.repository.MCompanyRepository;
 import com.uni.bankcmsapi.repository.MUserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +27,8 @@ public class MstCacheService {
     public List<M_COMPANY> getAllCompany() {
         return mCompanyRepository.findAll();
     }
+
+    @CacheEvict(cacheNames = "M_COMPANY")
+    public void evictAllCompany() {}
 
 }
