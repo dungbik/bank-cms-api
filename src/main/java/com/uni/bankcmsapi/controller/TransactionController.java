@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/txs")
+@RequestMapping("/v1/txs")
 public class TransactionController {
 
     private final HTransactionRepository hTransactionRepository;

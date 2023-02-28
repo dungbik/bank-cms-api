@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/dashboard")
+@RequestMapping("/v1/dashboard")
 public class DashboardController {
 
     private final MDashboardRepository mDashboardRepository;
