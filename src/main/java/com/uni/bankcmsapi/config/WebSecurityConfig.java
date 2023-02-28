@@ -48,7 +48,7 @@ public class WebSecurityConfig {
 
                 .and()
                 .authorizeRequests()
-                .requestMatchers("/api/v1/login", "/api/v1/subscribe").permitAll()
+                .requestMatchers("/v1/user/login", "/v1/sse/subscribe").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
