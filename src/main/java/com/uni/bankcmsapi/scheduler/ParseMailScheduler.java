@@ -212,7 +212,7 @@ public class ParseMailScheduler {
                             fee = (int) (amount * company.getFeeRate() / 100);
                             balance = amount - fee;
                         }
-                        totalAmount = Integer.parseInt(contents[5].substring(3).replaceAll(",", ""));
+                        totalAmount = Integer.parseInt(contents[5].replaceAll("[^0-9]", ""));
 
                         dateTimeStr = LocalDateTime.now().getYear() + " " + contents[0].substring(4, 15);
                     } else if (bank.equals(Bank.신협)) {
@@ -238,8 +238,6 @@ public class ParseMailScheduler {
                         log.error("[ParseMailScheduler] parse error no[{}] companyName[{}] name[{}] dateTimeStr[{}] content[{}]", startNo + i, companyName, name, dateTimeStr, content);
                         continue;
                     }
-
-
 
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM/dd HH:mm");
                     LocalDateTime dt = LocalDateTime.parse(dateTimeStr, formatter);
