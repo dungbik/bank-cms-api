@@ -24,7 +24,9 @@ public class H_TRANSACTION {
     private LocalDateTime txTime;
 
     public enum Bank {
-        KB
+        KB,
+        신협;
+
     }
 
     public enum TransactionType {

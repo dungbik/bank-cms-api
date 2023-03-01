@@ -175,30 +175,77 @@ public class ParseMailScheduler {
                     }
 
                     String[] contents = content.split("\n");
-                    String name = contents[2];
-                    boolean isDeposit = contents[3].contains("입금");
-                    int amount = Integer.parseInt(contents[4].replaceAll("[^0-9]", ""));
 
-                    Company company = companyMap.get(companyName);
-                    if (company == null) {
-                        log.error("[ParseMailScheduler] company is null no[{}] companyName[{}]", startNo + i, companyName);
+                    Bank bank = null;
+                    for (Bank b : Bank.values()) {
+                        if (contents[0].contains(b.name())) {
+                            bank = b;
+                            break;
+                        }
+                    }
+
+                    if (bank == null) {
+                        log.error("[ParseMailScheduler] unknown bank no[{}] companyName[{}] content[{}]", startNo + i, companyName, content);
                         continue;
                     }
 
+                    Company company = companyMap.get(companyName);
+                    if (company == null) {
+                        log.error("[ParseMailScheduler] company is null no[{}] companyName[{}] content[{}]", startNo + i, companyName, content);
+                        continue;
+                    }
+
+                    String name = null;
+                    boolean isDeposit = false;
+                    int amount = 0;
                     int fee = 0;
                     int balance = 0;
-                    if (isDeposit) {
-                        fee = (int) (amount * company.getFeeRate() / 100);
-                        balance = amount - fee;
-                    }
-                    int totalAmount = Integer.parseInt(contents[5].substring(3).replaceAll(",", ""));
+                    int totalAmount = 0;
+                    String dateTimeStr = null;
 
-                    String dateStr = LocalDateTime.now().getYear() + " " + contents[0].substring(4, 15);
+                    if (bank.equals(Bank.KB)) {
+                        name = contents[2];
+                        isDeposit = contents[3].contains("입금");
+                        amount = Integer.parseInt(contents[4].replaceAll("[^0-9]", ""));
+
+                        if (isDeposit) {
+                            fee = (int) (amount * company.getFeeRate() / 100);
+                            balance = amount - fee;
+                        }
+                        totalAmount = Integer.parseInt(contents[5].substring(3).replaceAll(",", ""));
+
+                        dateTimeStr = LocalDateTime.now().getYear() + " " + contents[0].substring(4, 15);
+                    } else if (bank.equals(Bank.신협)) {
+                        String[] firstLineSplit = contents[0].split(" ");
+                        String[] secondLineSplit = contents[1].split(" ");
+
+                        String dateStr = firstLineSplit[1];
+                        String timeStr = firstLineSplit[2];
+                        isDeposit = firstLineSplit[3].contains("입금");
+                        dateTimeStr = LocalDateTime.now().getYear() + " " + dateStr + " " + timeStr;
+
+                        amount = Integer.parseInt(secondLineSplit[0].replaceAll("[^0-9]", ""));
+                        name = secondLineSplit[1];
+                        totalAmount = Integer.parseInt(secondLineSplit[2].replaceAll("[^0-9]", ""));
+
+                        if (isDeposit) {
+                            fee = (int) (amount * company.getFeeRate() / 100);
+                            balance = amount - fee;
+                        }
+                    }
+
+                    if (name == null || dateTimeStr == null) {
+                        log.error("[ParseMailScheduler] parse error no[{}] companyName[{}] name[{}] dateTimeStr[{}] content[{}]", startNo + i, companyName, name, dateTimeStr, content);
+                        continue;
+                    }
+
+
+
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM/dd HH:mm");
-                    LocalDateTime dt = LocalDateTime.parse(dateStr, formatter);
+                    LocalDateTime dt = LocalDateTime.parse(dateTimeStr, formatter);
 
                     H_TRANSACTION hTransaction = new H_TRANSACTION(
-                            companyName, Bank.KB,
+                            companyName, bank,
                                     isDeposit ? TransactionType.DEPOSIT : TransactionType.WITHDRAW,
                                     name, amount, fee, balance, totalAmount, dt);
                     Transaction tx = new Transaction(companyName, hTransaction.getBank().name(), hTransaction.getTxType().name(), hTransaction.getName(), hTransaction.getAmount(), hTransaction.getFee(), hTransaction.getTotalAmount(), hTransaction.getBalance(), hTransaction.getTxTime());
