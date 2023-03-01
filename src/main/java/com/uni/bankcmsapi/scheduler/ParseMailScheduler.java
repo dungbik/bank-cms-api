@@ -86,7 +86,7 @@ public class ParseMailScheduler {
     }
 
     @Async
-    @Scheduled(initialDelay = 5000, fixedDelay = 5000)
+    @Scheduled(initialDelay = 5000, fixedDelay = 3000)
     public void execute() throws Exception {
 
         if (destroyed) {
@@ -126,8 +126,8 @@ public class ParseMailScheduler {
             mailService.getMessageCount();
             int startNo = mMail.getLastNo() + 1;
             int cnt = lastNo - startNo + 1;
-            if (cnt > 5) {
-                cnt = 5;
+            if (cnt > 2) {
+                cnt = 2;
             }
             if (cnt <= 0) {
                 continue;
