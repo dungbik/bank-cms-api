@@ -22,6 +22,10 @@ public class M_USER {
 
     private List<Authority> authorities = new ArrayList<>();
 
+    public boolean isAdmin() {
+        return this.authorities.contains(Authority.ROLE_ADMIN);
+    }
+
     public enum Authority {
         ROLE_USER, ROLE_ADMIN
     }

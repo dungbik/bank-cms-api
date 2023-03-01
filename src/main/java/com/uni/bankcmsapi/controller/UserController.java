@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,22 +38,14 @@ public class UserController {
 
         final List<String> companyNameList = mUser.getCompanyList();
         List<Company> companyList;
-        if (mUser.getAuthorities().contains(M_USER.Authority.ROLE_ADMIN)) {
-            companyList = mstCacheService.getAllCompany().stream()
-                    .map(e -> new Company(e.getCompanyName(), e.getFeeRate()))
-                    .collect(Collectors.toList());
+        if (mUser.isAdmin()) {
+            companyList = mstCacheService.getAllCompany();
         } else {
             companyList = mstCacheService.getAllCompany().stream()
                     .filter(e -> companyNameList.contains(e.getCompanyName()))
-                    .map(e -> new Company(e.getCompanyName(), e.getFeeRate()))
                     .collect(Collectors.toList());
         }
 
         return new LoginResponse(accessToken, new User(mUser.getUsername(), companyList, mUser.getAuthorities()));
-    }
-
-    @GetMapping("/login")
-    public String login() {
-        return "ok";
     }
 }

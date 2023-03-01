@@ -1,9 +1,9 @@
 package com.uni.bankcmsapi.scheduler;
 
 import com.uni.bankcmsapi.entity.H_TRANSACTION;
-import com.uni.bankcmsapi.entity.M_COMPANY;
 import com.uni.bankcmsapi.entity.M_DASHBOARD;
 import com.uni.bankcmsapi.entity.M_MAIL;
+import com.uni.bankcmsapi.model.Company;
 import com.uni.bankcmsapi.model.TodayDashboard;
 import com.uni.bankcmsapi.model.Transaction;
 import com.uni.bankcmsapi.repository.HTransactionRepository;
@@ -39,11 +39,12 @@ public class ParseMailScheduler {
     private final HTransactionRepository hTransactionRepository;
     private final MDashboardRepository mDashboardRepository;
     private final NotificationService notificationService;
+    private final MMailRepository mMailRepository;
 
     private String HOST = "imap.gmail.com";
     List<IMAPMailService> mailServices = new ArrayList<>();
+    private boolean destroyed = false;
 
-    private final MMailRepository mMailRepository;
 
     @PostConstruct
     void init() {
@@ -51,7 +52,9 @@ public class ParseMailScheduler {
     }
 
     @PreDestroy
-    void destroyMailService() {
+    void destroy() {
+        destroyed = true;
+
         if (CollectionUtils.isEmpty(mailServices)) {
             return;
         }
@@ -83,15 +86,20 @@ public class ParseMailScheduler {
     }
 
     @Async
-    @Scheduled(initialDelay = 1000, fixedDelay = 1000)
+    @Scheduled(initialDelay = 5000, fixedDelay = 1000)
     public void execute() throws Exception {
+
+        if (destroyed) {
+            return;
+        }
+
         if (CollectionUtils.isEmpty(mailServices)) {
             return;
         }
 
         Map<String, M_MAIL> mMailMap = this.mMailRepository.findAll().stream()
                 .collect(Collectors.toMap(e -> e.getEmail(), e -> e));
-        Map<String, M_COMPANY> mCompanyMap = this.mstCacheService.getAllCompany().stream()
+        Map<String, Company> companyMap = this.mstCacheService.getAllCompany().stream()
                 .collect(Collectors.toMap(e -> e.getCompanyName(), e -> e));
 
         for (IMAPMailService mailService : mailServices) {
@@ -171,16 +179,16 @@ public class ParseMailScheduler {
                     boolean isDeposit = contents[3].contains("입금");
                     int amount = Integer.parseInt(contents[4].replaceAll("[^0-9]", ""));
 
-                    M_COMPANY mCompany = mCompanyMap.get(companyName);
-                    if (mCompany == null) {
-                        log.error("[ParseMailScheduler] mCompany is null no[{}] companyName[{}]", startNo + i, companyName);
+                    Company company = companyMap.get(companyName);
+                    if (company == null) {
+                        log.error("[ParseMailScheduler] company is null no[{}] companyName[{}]", startNo + i, companyName);
                         continue;
                     }
 
                     int fee = 0;
                     int balance = 0;
                     if (isDeposit) {
-                        fee = (int) (amount * mCompany.getFeeRate() / 100);
+                        fee = (int) (amount * company.getFeeRate() / 100);
                         balance = amount - fee;
                     }
                     int totalAmount = Integer.parseInt(contents[5].substring(3).replaceAll(",", ""));
