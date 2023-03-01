@@ -1,8 +1,8 @@
 package com.uni.bankcmsapi.controller;
 
 import com.uni.bankcmsapi.component.TokenComponent;
-import com.uni.bankcmsapi.entity.M_COMPANY;
 import com.uni.bankcmsapi.entity.M_USER;
+import com.uni.bankcmsapi.model.Company;
 import com.uni.bankcmsapi.model.LoginRequest;
 import com.uni.bankcmsapi.model.LoginResponse;
 import com.uni.bankcmsapi.model.User;
@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,10 +37,16 @@ public class UserController {
 
         M_USER mUser = mstCacheService.findByUsername(authentication.getName());
 
-        List<String> companyList = mUser.getCompanyList();
+        final List<String> companyNameList = mUser.getCompanyList();
+        List<Company> companyList;
         if (mUser.getAuthorities().contains(M_USER.Authority.ROLE_ADMIN)) {
             companyList = mstCacheService.getAllCompany().stream()
-                    .map(M_COMPANY::getCompanyName)
+                    .map(e -> new Company(e.getCompanyName(), e.getFeeRate()))
+                    .collect(Collectors.toList());
+        } else {
+            companyList = mstCacheService.getAllCompany().stream()
+                    .filter(e -> companyNameList.contains(e.getCompanyName()))
+                    .map(e -> new Company(e.getCompanyName(), e.getFeeRate()))
                     .collect(Collectors.toList());
         }
 

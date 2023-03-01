@@ -12,6 +12,6 @@ import java.util.List;
 @Data
 public class User {
     private String username;
-    private List<String> companyList;
+    private List<Company> companyList;
     private List<M_USER.Authority> authority;
 }
