@@ -86,7 +86,7 @@ public class ParseMailScheduler {
     }
 
     @Async
-    @Scheduled(initialDelay = 5000, fixedDelay = 1000)
+    @Scheduled(initialDelay = 5000, fixedDelay = 5000)
     public void execute() throws Exception {
 
         if (destroyed) {
