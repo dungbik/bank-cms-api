@@ -217,16 +217,15 @@ public class ParseMailScheduler {
                         dateTimeStr = LocalDateTime.now().getYear() + " " + contents[0].substring(4, 15);
                     } else if (bank.equals(Bank.신협)) {
                         String[] firstLineSplit = contents[0].split(" ");
-                        String[] secondLineSplit = contents[1].split(" ");
 
                         String dateStr = firstLineSplit[1];
                         String timeStr = firstLineSplit[2];
                         isDeposit = firstLineSplit[3].contains("입금");
                         dateTimeStr = LocalDateTime.now().getYear() + " " + dateStr + " " + timeStr;
 
-                        amount = Integer.parseInt(secondLineSplit[0].replaceAll("[^0-9]", ""));
-                        name = secondLineSplit[1];
-                        totalAmount = Integer.parseInt(secondLineSplit[2].replaceAll("[^0-9]", ""));
+                        amount = Integer.parseInt(firstLineSplit[4].replaceAll("[^0-9]", ""));
+                        name = firstLineSplit[5];
+                        totalAmount = Integer.parseInt(firstLineSplit[6].replaceAll("[^0-9]", ""));
 
                         if (isDeposit) {
                             fee = (int) (amount * company.getFeeRate() / 100);
