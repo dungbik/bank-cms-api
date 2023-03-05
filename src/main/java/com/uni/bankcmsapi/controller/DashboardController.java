@@ -31,7 +31,7 @@ public class DashboardController {
     @GetMapping
     public DashboardResponse getDashboard(@RequestParam String companyName) {
         M_USER user = userComponent.getUser();
-        if (user == null || StringUtils.isEmpty(companyName) || !user.getCompanyList().contains(companyName)) {
+        if (user == null || StringUtils.isEmpty(companyName) || !user.hasCompany(companyName)) {
             log.warn("[getDashboard] user[{}] companyName[{}] user.getCompanyList()[{}]", user, companyName, user.getCompanyList());
             return new DashboardResponse();
         }

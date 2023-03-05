@@ -60,7 +60,7 @@ public class NotificationService {
                 Transaction tx = ((Transaction) data);
 
                 log.info("[NotificationService] Transaction mUser.getCompanyList()[{}] companyName[{}]", mUser.getCompanyList(), tx.getCompanyName());
-                if (mUser.getCompanyList().contains(tx.getCompanyName())) {
+                if (mUser.hasCompany(tx.getCompanyName())) {
                     log.info("[NotificationService] call sendToClient name[{}] tx[{}]", name, tx);
                     sendToClient(map.getValue(), map.getKey(), name, tx);
                 }
@@ -68,7 +68,7 @@ public class NotificationService {
                 M_USER mUser = mstCacheService.findByUsername(username);
                 TodayDashboard todayDashboard = ((TodayDashboard) data);
                 log.info("[NotificationService] TodayDashboard mUser.getCompanyList()[{}] companyName[{}]", mUser.getCompanyList(), todayDashboard.getCompanyName());
-                if (mUser.getCompanyList().contains(todayDashboard.getCompanyName())) {
+                if (mUser.hasCompany(todayDashboard.getCompanyName())) {
                     log.info("[NotificationService] call sendToClient name[{}] todayDashboard[{}]", name, todayDashboard);
                     sendToClient(map.getValue(), map.getKey(), name, todayDashboard);
                 }

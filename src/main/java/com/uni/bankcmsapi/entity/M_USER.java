@@ -26,6 +26,10 @@ public class M_USER {
         return this.authorities.contains(Authority.ROLE_ADMIN);
     }
 
+    public boolean hasCompany(String companyName) {
+        return isAdmin() || this.companyList.contains(companyName);
+    }
+
     public enum Authority {
         ROLE_USER, ROLE_ADMIN
     }

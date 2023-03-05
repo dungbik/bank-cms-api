@@ -34,7 +34,7 @@ public class TransactionController {
         }
 
         M_USER user = userComponent.getUser();
-        if (StringUtils.isEmpty(companyName) || !user.getCompanyList().contains(companyName)) {
+        if (StringUtils.isEmpty(companyName) || !user.hasCompany(companyName)) {
             log.warn("[getTransaction] companyName[{}] user.getCompanyList()[{}]", companyName, user.getCompanyList());
             return new TransactionResponse();
         }
