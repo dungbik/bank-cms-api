@@ -2,12 +2,10 @@ package com.uni.bankcmsapi.controller;
 
 import com.uni.bankcmsapi.model.APIResponse;
 import com.uni.bankcmsapi.model.AddCompanyRequest;
+import com.uni.bankcmsapi.model.AddTransactinoRequest;
 import com.uni.bankcmsapi.service.AdminService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,4 +18,15 @@ public class AdminController {
     public APIResponse addCompany(@RequestBody AddCompanyRequest param) {
         return this.adminService.addCompany(param);
     }
+
+    @PostMapping("/add-data")
+    public APIResponse addTransaction(@RequestBody AddTransactinoRequest param) {
+        return this.adminService.addTransaction(param);
+    }
+
+    @DeleteMapping("/delete-data")
+    public APIResponse addTransaction(@RequestParam String id) {
+        return this.adminService.deleteTransaction(id);
+    }
+
 }
