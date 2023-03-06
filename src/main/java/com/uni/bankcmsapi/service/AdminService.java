@@ -4,11 +4,9 @@ import com.uni.bankcmsapi.entity.H_TRANSACTION;
 import com.uni.bankcmsapi.entity.H_TRANSACTION.Bank;
 import com.uni.bankcmsapi.entity.H_TRANSACTION.TransactionType;
 import com.uni.bankcmsapi.entity.M_COMPANY;
+import com.uni.bankcmsapi.entity.M_DASHBOARD;
 import com.uni.bankcmsapi.entity.M_USER;
-import com.uni.bankcmsapi.model.APIResponse;
-import com.uni.bankcmsapi.model.AddCompanyRequest;
-import com.uni.bankcmsapi.model.AddTransactinoRequest;
-import com.uni.bankcmsapi.model.Company;
+import com.uni.bankcmsapi.model.*;
 import com.uni.bankcmsapi.repository.HTransactionRepository;
 import com.uni.bankcmsapi.repository.MCompanyRepository;
 import com.uni.bankcmsapi.repository.MDashboardRepository;
@@ -36,6 +34,7 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final HTransactionRepository hTransactionRepository;
     private final MDashboardRepository mDashboardRepository;
+    private final NotificationService notificationService;
 
     public APIResponse addCompany(AddCompanyRequest param) {
         String companyName = param.getCompanyName();
@@ -113,6 +112,12 @@ public class AdminService {
 
         this.mDashboardRepository.updateDashboard(key, isDeposit ? amount : 0, isDeposit ? 0 : amount, fee, balance);
 
+        M_DASHBOARD mDashboard = this.mDashboardRepository.findById(key).orElse(null);
+        if (mDashboard != null) {
+            TodayDashboard todayDashboard = new TodayDashboard(companyName, mDashboard.getTotalDeposit(), mDashboard.getTotalWithdraw(), mDashboard.getTotalFee(), mDashboard.getTotalBalance());
+            this.notificationService.sendAll("dashboard", todayDashboard);
+        }
+
         return new APIResponse();
     }
 
@@ -143,8 +148,14 @@ public class AdminService {
             }
             log.debug("[deleteTransaction] txTime[{}] key[{}] isDeposit[{}] amount[{}] fee[{}] balance[{}]", txTime, key, isDeposit, amount, fee, balance);
 
-            this.mDashboardRepository.updateDashboard(key, isDeposit ? -amount : 0, isDeposit ? 0 : -amount, -fee, -balance);
             this.hTransactionRepository.delete(hTransaction);
+            this.mDashboardRepository.updateDashboard(key, isDeposit ? -amount : 0, isDeposit ? 0 : -amount, -fee, -balance);
+
+            M_DASHBOARD mDashboard = this.mDashboardRepository.findById(key).orElse(null);
+            if (mDashboard != null) {
+                TodayDashboard todayDashboard = new TodayDashboard(companyName, mDashboard.getTotalDeposit(), mDashboard.getTotalWithdraw(), mDashboard.getTotalFee(), mDashboard.getTotalBalance());
+                this.notificationService.sendAll("dashboard", todayDashboard);
+            }
         }
 
         return new APIResponse();
