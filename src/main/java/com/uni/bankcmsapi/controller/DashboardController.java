@@ -40,6 +40,7 @@ public class DashboardController {
         LocalDateTime yesterday = today.minusDays(1L);
         String todayKey = KeyUtil.makeDashboardKey(today, companyName);
         String yesterdayKey = KeyUtil.makeDashboardKey(yesterday, companyName);
+        log.debug("[getDashboard] yesterday[{}] yesterdayKey[{}] today[{}] todayKey[{}]", yesterday, yesterdayKey, today, todayKey);
 
         Map<String, M_DASHBOARD> mDashboardMap = mDashboardRepository.findAllById(List.of(yesterdayKey, todayKey)).stream()
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e));
