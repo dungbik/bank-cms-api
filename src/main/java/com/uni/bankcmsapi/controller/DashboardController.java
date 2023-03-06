@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class DashboardController {
             return new DashboardResponse();
         }
 
-        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime today = LocalDateTime.now(ZoneId.of("Asia/Seoul")).now();
         LocalDateTime yesterday = today.minusDays(1L);
         String todayKey = KeyUtil.makeDashboardKey(today, companyName);
         String yesterdayKey = KeyUtil.makeDashboardKey(yesterday, companyName);
