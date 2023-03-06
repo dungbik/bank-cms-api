@@ -93,7 +93,8 @@ public class AdminService {
 
         int fee = 0;
         int balance = 0;
-        if (txType.equals(TransactionType.DEPOSIT)) {
+        boolean isDeposit = txType.equals(TransactionType.DEPOSIT);
+        if (isDeposit) {
             fee = (int) (amount * company.getFeeRate() / 100);
             balance = amount - fee;
         }
@@ -106,6 +107,11 @@ public class AdminService {
                 name, amount, fee, balance, totalAmount, dt);
 
         this.hTransactionRepository.insert(hTransaction);
+
+        String key = (dt.getYear() * 10000 + dt.getMonth().getValue() * 100 + dt.getDayOfMonth()) + "_" + companyName;
+        log.debug("[addTransaction] txTime[{}] key[{}] isDeposit[{}] amount[{}] fee[{}] balance[{}]", txTime, key, isDeposit, amount, fee, balance);
+
+        this.mDashboardRepository.updateDashboard(key, isDeposit ? amount : 0, isDeposit ? 0 : amount, fee, balance);
 
         return new APIResponse();
     }
@@ -125,7 +131,7 @@ public class AdminService {
                 return APIResponse.ofFail();
             }
 
-            ZonedDateTime txTime = hTransaction.getTxTime().atZone(ZoneId.of(""));
+            ZonedDateTime txTime = hTransaction.getTxTime().atZone(ZoneId.of("Asia/Seoul"));
             String key = (txTime.getYear() * 10000 + txTime.getMonth().getValue() * 100 + txTime.getDayOfMonth()) + "_" + companyName;
             boolean isDeposit = hTransaction.getTxType().equals(TransactionType.DEPOSIT);
             int amount = hTransaction.getAmount();
