@@ -37,7 +37,7 @@ public class DashboardController {
             return new DashboardResponse();
         }
 
-        LocalDateTime today = LocalDateTime.now(ZoneId.of("Asia/Seoul")).now();
+        LocalDateTime today = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         LocalDateTime yesterday = today.minusDays(1L);
         String todayKey = KeyUtil.makeDashboardKey(today, companyName);
         String yesterdayKey = KeyUtil.makeDashboardKey(yesterday, companyName);
