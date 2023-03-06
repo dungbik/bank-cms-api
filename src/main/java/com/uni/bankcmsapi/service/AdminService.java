@@ -11,6 +11,7 @@ import com.uni.bankcmsapi.model.AddTransactinoRequest;
 import com.uni.bankcmsapi.model.Company;
 import com.uni.bankcmsapi.repository.HTransactionRepository;
 import com.uni.bankcmsapi.repository.MCompanyRepository;
+import com.uni.bankcmsapi.repository.MDashboardRepository;
 import com.uni.bankcmsapi.repository.MUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -32,6 +35,7 @@ public class AdminService {
     private final MUserRepository mUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final HTransactionRepository hTransactionRepository;
+    private final MDashboardRepository mDashboardRepository;
 
     public APIResponse addCompany(AddCompanyRequest param) {
         String companyName = param.getCompanyName();
@@ -108,7 +112,34 @@ public class AdminService {
 
     public APIResponse deleteTransaction(String id) {
 
-        this.hTransactionRepository.deleteById(id);
+        H_TRANSACTION hTransaction = this.hTransactionRepository.findById(id).orElse(null);
+        if (hTransaction != null) {
+            String companyName = hTransaction.getCompanyName();
+            Company company = mstCacheService.getAllCompany().stream()
+                    .filter(e -> e.getCompanyName().equals(companyName))
+                    .findFirst()
+                    .orElse(null);
+            if (company == null) {
+                log.warn("[deleteTransaction] company is null companyName[{}]",
+                        companyName);
+                return APIResponse.ofFail();
+            }
+
+            ZonedDateTime txTime = hTransaction.getTxTime().atZone(ZoneId.of(""));
+            String key = (txTime.getYear() * 10000 + txTime.getMonth().getValue() * 100 + txTime.getDayOfMonth()) + "_" + companyName;
+            boolean isDeposit = hTransaction.getTxType().equals(TransactionType.DEPOSIT);
+            int amount = hTransaction.getAmount();
+            int fee = 0;
+            int balance = 0;
+            if (isDeposit) {
+                fee = (int) (amount * company.getFeeRate() / 100);
+                balance = amount - fee;
+            }
+            log.debug("[deleteTransaction] txTime[{}] key[{}] isDeposit[{}] amount[{}] fee[{}] balance[{}]", txTime, key, isDeposit, amount, fee, balance);
+
+            this.mDashboardRepository.updateDashboard(key, isDeposit ? -amount : 0, isDeposit ? 0 : -amount, -fee, -balance);
+            this.hTransactionRepository.delete(hTransaction);
+        }
 
         return new APIResponse();
     }
