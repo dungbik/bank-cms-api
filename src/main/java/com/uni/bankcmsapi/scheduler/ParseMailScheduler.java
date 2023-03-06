@@ -242,15 +242,16 @@ public class ParseMailScheduler {
                     LocalDateTime dt = LocalDateTime.parse(dateTimeStr, formatter);
 
                     H_TRANSACTION hTransaction = new H_TRANSACTION(
-                            companyName, bank,
+                            null, companyName, bank,
                                     isDeposit ? TransactionType.DEPOSIT : TransactionType.WITHDRAW,
                                     name, amount, fee, balance, totalAmount, dt);
-                    Transaction tx = new Transaction(companyName, hTransaction.getBank().name(), hTransaction.getTxType().name(), hTransaction.getName(), hTransaction.getAmount(), hTransaction.getFee(), hTransaction.getTotalAmount(), hTransaction.getBalance(), hTransaction.getTxTime());
+
+                    this.hTransactionRepository.insert(hTransaction);
+
+                    Transaction tx = new Transaction(hTransaction.getId(), companyName, hTransaction.getBank().name(), hTransaction.getTxType().name(), hTransaction.getName(), hTransaction.getAmount(), hTransaction.getFee(), hTransaction.getTotalAmount(), hTransaction.getBalance(), hTransaction.getTxTime());
                     if (tx != null) {
                         this.notificationService.sendAll("tx", tx);
                     }
-
-                    this.hTransactionRepository.insert(hTransaction);
 
                     String key = (dt.getYear() * 10000 + dt.getMonth().getValue() * 100 + dt.getDayOfMonth()) + "_" + companyName;
                     this.mDashboardRepository.updateDashboard(key, isDeposit ? amount : 0, isDeposit ? 0 : amount, fee, balance);

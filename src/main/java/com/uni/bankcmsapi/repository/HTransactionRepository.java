@@ -46,7 +46,7 @@ class HTransactionExtRepositoryImpl implements HTransactionExtRepository {
 
         List<H_TRANSACTION> list = this.mongoTemplate.find(query, H_TRANSACTION.class);
         List<Transaction> transactionList = list.stream()
-                .map(e -> new Transaction(e.getCompanyName(), e.getBank().name(), e.getTxType().name(), e.getName(), e.getAmount(), e.getFee(), e.getTotalAmount(), e.getBalance(), e.getTxTime())).collect(Collectors.toList());
+                .map(e -> new Transaction(e.getId(), e.getCompanyName(), e.getBank().name(), e.getTxType().name(), e.getName(), e.getAmount(), e.getFee(), e.getTotalAmount(), e.getBalance(), e.getTxTime())).collect(Collectors.toList());
         return transactionList;
 
     }
