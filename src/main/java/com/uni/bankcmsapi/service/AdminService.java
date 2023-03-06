@@ -94,7 +94,7 @@ public class AdminService {
             balance = amount - fee;
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime dt = LocalDateTime.parse(txTime, formatter);
 
         H_TRANSACTION hTransaction = new H_TRANSACTION(
