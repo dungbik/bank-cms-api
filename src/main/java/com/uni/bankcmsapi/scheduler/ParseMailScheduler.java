@@ -185,13 +185,13 @@ public class ParseMailScheduler {
                     }
 
                     if (bank == null) {
-                        log.error("[ParseMailScheduler] unknown bank no[{}] companyName[{}] content[{}]", startNo + i, Arrays.toString(subject.split("\\s+")), content);
+                        log.error("[ParseMailScheduler] unknown bank no[{}] companyName[{}] content[{}]", startNo + i, companyName, content);
                         continue;
                     }
 
                     Company company = companyMap.get(companyName);
                     if (company == null) {
-                        log.error("[ParseMailScheduler] company is null no[{}] companyName[{}] content[{}]", startNo + i, companyName, content);
+                        log.error("[ParseMailScheduler] company is null no[{}] subject[{}] subject_split[{}] companyName[{}] content[{}]", startNo + i, subject, Arrays.toString(subject.split("\\s+")), companyName, content);
                         continue;
                     }
 
