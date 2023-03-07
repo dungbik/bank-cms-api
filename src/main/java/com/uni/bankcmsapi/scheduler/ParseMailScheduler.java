@@ -167,7 +167,7 @@ public class ParseMailScheduler {
 
                 String subject = msg.getSubject();
                 if (subject.contains("[메일파싱]")) {
-                    String splitSubject = subject.split("\\s+");
+                    String[] splitSubject = subject.split("\\s+");
                     String companyName = splitSubject[splitSubject.length - 1];
                     String content = mailService.getEmailText(msg.getContent());
                     if (content == null) {
