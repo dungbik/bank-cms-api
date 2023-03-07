@@ -167,7 +167,8 @@ public class ParseMailScheduler {
 
                 String subject = msg.getSubject();
                 if (subject.contains("[메일파싱]")) {
-                    String companyName = subject.split("\\s+")[1];
+                    String splitSubject = subject.split("\\s+");
+                    String companyName = splitSubject[splitSubject.length - 1];
                     String content = mailService.getEmailText(msg.getContent());
                     if (content == null) {
                         log.error("[ParseMailScheduler] content is null no[{}]", startNo + i);
@@ -191,7 +192,7 @@ public class ParseMailScheduler {
 
                     Company company = companyMap.get(companyName);
                     if (company == null) {
-                        log.error("[ParseMailScheduler] company is null no[{}] subject[{}] subject_split[{}] companyName[{}] content[{}]", startNo + i, subject, Arrays.toString(subject.split("\\s+")), companyName, content);
+                        log.error("[ParseMailScheduler] company is null no[{}] subject[{}] companyName[{}] content[{}]", startNo + i, subject, companyName, content);
                         continue;
                     }
 
