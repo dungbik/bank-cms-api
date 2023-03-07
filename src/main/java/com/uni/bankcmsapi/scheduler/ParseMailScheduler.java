@@ -185,7 +185,7 @@ public class ParseMailScheduler {
                     }
 
                     if (bank == null) {
-                        log.error("[ParseMailScheduler] unknown bank no[{}] companyName[{}] content[{}]", startNo + i, companyName, content);
+                        log.error("[ParseMailScheduler] unknown bank no[{}] companyName[{}] content[{}]", startNo + i, Arrays.toString(subject.split("\\s+")), content);
                         continue;
                     }
 
