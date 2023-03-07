@@ -74,7 +74,7 @@ public class AdminService {
         TransactionType txType = TransactionType.valueOf(param.getTxType());
 
         if (amount <= 0 || bank == null || StringUtils.isEmpty(companyName) || StringUtils.isEmpty(name)
-                || totalAmount <= 0 || StringUtils.isEmpty(txTime) || txType == null) {
+                || totalAmount < 0 || StringUtils.isEmpty(txTime) || txType == null) {
             log.warn("[addTransaction] Invalid param amount[{}] bank[{}] companyName[{}] name[{}] totalAmount[{}] txTime[{}] txType[{}]",
                     amount, bank, companyName, name, totalAmount, txTime, txType);
             return APIResponse.ofFail();
