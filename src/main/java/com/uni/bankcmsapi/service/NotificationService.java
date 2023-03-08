@@ -30,19 +30,19 @@ public class NotificationService {
             return null;
         }
 
-        SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
+        SseEmitter emitter = new SseEmitter(60 * 1000L);
 
         String username = mUser.getUsername();
         String userKey = username + "_" + System.currentTimeMillis();
         this.emitters.put(userKey, emitter);
 
-        log.info("[NotificationService] new emitter added emitter[{}] totalSize[{}]", emitter, this.emitters.size());
+//        log.info("[NotificationService] new emitter added emitter[{}] totalSize[{}]", emitter, this.emitters.size());
         emitter.onCompletion(() -> {
             this.emitters.remove(userKey);
-            log.info("[NotificationService] onCompletion userKey[{}] totalSize[{}]", userKey, this.emitters.size());
+//            log.info("[NotificationService] onCompletion userKey[{}] totalSize[{}]", userKey, this.emitters.size());
         });
         emitter.onTimeout(() -> {
-            log.info("[NotificationService] onTimeout");
+//            log.info("[NotificationService] onTimeout");
             emitter.complete();
         });
 
