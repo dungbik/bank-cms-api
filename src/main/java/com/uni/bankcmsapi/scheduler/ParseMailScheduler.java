@@ -234,7 +234,7 @@ public class ParseMailScheduler {
                         }
                     } else if (bank.equals(Bank.광주)) {
                         isDeposit = contents[2].contains("입금");
-                        dateTimeStr = LocalDateTime.now().getYear() + " " + contents[1];
+                        dateTimeStr = LocalDateTime.now().getYear() + " " + contents[1].trim();
 
                         amount = Integer.parseInt(contents[2].replaceAll("[^0-9]", ""));
                         name = contents[4];
@@ -252,7 +252,12 @@ public class ParseMailScheduler {
                     }
 
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM/dd HH:mm");
-                    LocalDateTime dt = LocalDateTime.parse(dateTimeStr, formatter);
+                    LocalDateTime dt = LocalDateTime.now();
+                    try {
+                        dt = LocalDateTime.parse(dateTimeStr, formatter);
+                    } catch (Exception ex) {
+                        log.error("[ParseMailScheduler] date parse error dateTimeStr[{}]", dateTimeStr);
+                    }
 
                     H_TRANSACTION hTransaction = new H_TRANSACTION(
                             null, companyName, bank,
