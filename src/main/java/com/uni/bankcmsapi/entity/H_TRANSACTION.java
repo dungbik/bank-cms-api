@@ -27,7 +27,9 @@ public class H_TRANSACTION {
 
     public enum Bank {
         KB,
-        신협;
+        신협,
+        광주,
+        ;
 
     }
 

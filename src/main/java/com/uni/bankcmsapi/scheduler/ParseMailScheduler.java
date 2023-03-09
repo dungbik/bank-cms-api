@@ -232,6 +232,18 @@ public class ParseMailScheduler {
                             fee = (int) (amount * company.getFeeRate() / 100);
                             balance = amount - fee;
                         }
+                    } else if (bank.equals(Bank.광주)) {
+                        isDeposit = contents[2].contains("입금");
+                        dateTimeStr = LocalDateTime.now().getYear() + " " + contents[1];
+
+                        amount = Integer.parseInt(contents[2].replaceAll("[^0-9]", ""));
+                        name = contents[4];
+                        totalAmount = Integer.parseInt(contents[3].replaceAll("[^0-9]", ""));
+
+                        if (isDeposit) {
+                            fee = (int) (amount * company.getFeeRate() / 100);
+                            balance = amount - fee;
+                        }
                     }
 
                     if (name == null || dateTimeStr == null) {
