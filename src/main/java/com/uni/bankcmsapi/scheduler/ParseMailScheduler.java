@@ -177,11 +177,23 @@ public class ParseMailScheduler {
 
                     String[] contents = content.split("\n");
 
+
+                    int startIndex = 0;
+
                     Bank bank = null;
                     for (Bank b : Bank.values()) {
                         if (contents[0].contains(b.name())) {
                             bank = b;
                             break;
+                        }
+                    }
+                    if (bank == null) {
+                        for (Bank b : Bank.values()) {
+                            if (contents[1].contains(b.name())) {
+                                startIndex = 1;
+                                bank = b;
+                                break;
+                            }
                         }
                     }
 
@@ -233,12 +245,12 @@ public class ParseMailScheduler {
                             balance = amount - fee;
                         }
                     } else if (bank.equals(Bank.광주)) {
-                        isDeposit = contents[2].contains("입금");
-                        dateTimeStr = LocalDateTime.now().getYear() + " " + contents[1].trim();
+                        isDeposit = contents[startIndex + 2].contains("입금");
+                        dateTimeStr = LocalDateTime.now().getYear() + " " + contents[startIndex + 1].trim();
 
-                        amount = Integer.parseInt(contents[2].replaceAll("[^0-9]", ""));
-                        name = contents[4];
-                        totalAmount = Integer.parseInt(contents[3].replaceAll("[^0-9]", ""));
+                        amount = Integer.parseInt(contents[startIndex + 2].replaceAll("[^0-9]", ""));
+                        name = contents[startIndex + 4];
+                        totalAmount = Integer.parseInt(contents[startIndex + 3].replaceAll("[^0-9]", ""));
 
                         if (isDeposit) {
                             fee = (int) (amount * company.getFeeRate() / 100);
