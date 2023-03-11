@@ -81,7 +81,7 @@ public class TransactionService {
                 fee = (int) (amount * company.getFeeRate() / 100);
                 balance = amount - fee;
             }
-            totalAmount = Integer.parseInt(splitMessage[startIndex + 4].replaceAll("[^0-9]", ""));
+            totalAmount = Integer.parseInt(splitMessage[startIndex + 5].replaceAll("[^0-9]", ""));
 
             dateTimeStr = LocalDateTime.now().getYear() + " " + splitMessage[startIndex].substring(4, 15);
         } else if (bank.equals(H_TRANSACTION.Bank.신협)) {
