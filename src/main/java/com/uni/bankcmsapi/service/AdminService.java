@@ -64,7 +64,7 @@ public class AdminService {
         return new APIResponse();
     }
 
-    public APIResponse addTransaction(AddTransactinoRequest param) {
+    public APIResponse addTransaction(AddTransactionRequest param) {
         int amount = param.getAmount();
         Bank bank = Bank.valueOf(param.getBank());
         String companyName = param.getCompanyName();

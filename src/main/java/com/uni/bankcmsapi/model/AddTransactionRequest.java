@@ -3,7 +3,7 @@ package com.uni.bankcmsapi.model;
 import lombok.Data;
 
 @Data
-public class AddTransactinoRequest {
+public class AddTransactionRequest {
 
     private int amount;
     private String bank;

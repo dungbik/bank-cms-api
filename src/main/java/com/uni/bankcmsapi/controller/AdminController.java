@@ -2,7 +2,7 @@ package com.uni.bankcmsapi.controller;
 
 import com.uni.bankcmsapi.model.APIResponse;
 import com.uni.bankcmsapi.model.AddCompanyRequest;
-import com.uni.bankcmsapi.model.AddTransactinoRequest;
+import com.uni.bankcmsapi.model.AddTransactionRequest;
 import com.uni.bankcmsapi.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ public class AdminController {
     }
 
     @PostMapping("/add-data")
-    public APIResponse addTransaction(@RequestBody AddTransactinoRequest param) {
+    public APIResponse addTransaction(@RequestBody AddTransactionRequest param) {
         return this.adminService.addTransaction(param);
     }
 

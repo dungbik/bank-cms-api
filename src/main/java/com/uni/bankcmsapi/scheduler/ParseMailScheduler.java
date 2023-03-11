@@ -112,6 +112,11 @@ public class ParseMailScheduler {
                 loginMailService(mailService, mMail.getEmail(), mMail.getPassword());
             }
 
+            if (!mailService.isLoggedIn()) {
+                log.warn("[ParseMailScheduler] isLoggedIn is false email[{}]", mailService.getEmail());
+                continue;
+            }
+
             int lastNo = 0;
             int retryCnt = 3;
             while (retryCnt-- > 0) {
