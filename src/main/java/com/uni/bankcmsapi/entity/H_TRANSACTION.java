@@ -29,6 +29,7 @@ public class H_TRANSACTION {
         KB,
         신협,
         광주,
+        기업,
         ;
 
     }
